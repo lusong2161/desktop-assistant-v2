@@ -50,7 +50,7 @@ jobs:
         flutter test
         
     - name: Upload Build Artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: windows-build
         path: smart-assistant/build/windows/runner/Release/

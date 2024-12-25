@@ -62,6 +62,13 @@ class _ChatScreenState extends State<ChatScreen> {
                             final response = await _aiService.processMessage(
                               _messageController.text,
                             );
+                            
+                            if (response['type'] == 'error') {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(response['content'])),
+                              );
+                              return;
+                            }
                             setState(() {
                               _messages.add(Message(
                                 id: DateTime.now().toString(),
@@ -73,7 +80,7 @@ class _ChatScreenState extends State<ChatScreen> {
                               ));
                               _messages.add(Message(
                                 id: DateTime.now().toString(),
-                                content: response,
+                                content: response['content'],
                                 senderId: 'ai',
                                 receiverId: 'user',
                                 timestamp: DateTime.now(),
