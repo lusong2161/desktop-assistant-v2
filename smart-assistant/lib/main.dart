@@ -54,6 +54,10 @@ class _MyHomePageState extends State<MyHomePage> {
   final List<String> _messages = [];
   String? _selectedFilePath;
   String _markdownContent = '';
+  bool _isEditing = false;
+  List<String> _onlineUsers = ['用户A', '用户B', '用户C'];
+  List<String> _sharedFiles = [];
+  String _currentDocument = '';
 
   // 测试智能对话系统
   Future<void> _testAIDialog() async {
@@ -97,19 +101,39 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  // 测试文档预览
+  // 测试文档预览和协作
   Future<void> _testDocumentPreview() async {
     setState(() {
       _markdownContent = '''
-# 测试文档
-这是一个测试文档，用于验证文档预览功能。
+# 协同办公文档
+这是一个协同办公测试文档。
 
 ## 功能列表
-1. 文档编辑
-2. 实时预览
-3. 格式化支持
+1. 多人实时编辑
+2. 文档版本控制
+3. 在线协作
+4. 即时预览
 ''';
+      _isEditing = true;
     });
+  }
+
+  // 测试用户通信
+  void _testUserCommunication(String user) {
+    setState(() {
+      _messages.add('向 $user 发送消息: ${_messageController.text}');
+      _messageController.clear();
+    });
+  }
+
+  // 测试文件共享
+  Future<void> _shareFile() async {
+    if (_selectedFilePath != null) {
+      setState(() {
+        _sharedFiles.add('共享文件: $_selectedFilePath');
+        _messages.add('文件已共享: $_selectedFilePath');
+      });
+    }
   }
 
   @override
@@ -119,18 +143,38 @@ class _MyHomePageState extends State<MyHomePage> {
         title: const Text('智能助手功能测试'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
-      body: Column(
+      body: Row(
         children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: _messages.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(_messages[index]),
-                );
-              },
+          // 左侧用户列表
+          SizedBox(
+            width: 200,
+            child: Card(
+              child: ListView.builder(
+                itemCount: _onlineUsers.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    leading: const Icon(Icons.person),
+                    title: Text(_onlineUsers[index]),
+                    onTap: () => _testUserCommunication(_onlineUsers[index]),
+                  );
+                },
+              ),
             ),
           ),
+          // 主要内容区域
+          Expanded(
+            child: Column(
+              children: [
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: _messages.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title: Text(_messages[index]),
+                      );
+                    },
+                  ),
+                ),
           if (_markdownContent.isNotEmpty)
             Expanded(
               child: Markdown(data: _markdownContent),
@@ -162,15 +206,35 @@ class _MyHomePageState extends State<MyHomePage> {
               children: [
                 ElevatedButton(
                   onPressed: _testFileTransfer,
-                  child: const Text('测试文件传输'),
+                  child: const Text('选择文件'),
+                ),
+                ElevatedButton(
+                  onPressed: _shareFile,
+                  child: const Text('共享文件'),
                 ),
                 ElevatedButton(
                   onPressed: _testDocumentPreview,
-                  child: const Text('测试文档预览'),
+                  child: const Text('协同文档'),
                 ),
               ],
             ),
           ),
+          if (_sharedFiles.isNotEmpty)
+            Container(
+              height: 100,
+              padding: const EdgeInsets.all(8.0),
+              child: Card(
+                child: ListView.builder(
+                  itemCount: _sharedFiles.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      leading: const Icon(Icons.file_present),
+                      title: Text(_sharedFiles[index]),
+                    );
+                  },
+                ),
+              ),
+            ),
         ],
       ),
     );
