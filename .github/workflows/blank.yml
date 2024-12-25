@@ -1,0 +1,72 @@
+name: Windows Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    env:
+      Solution_Name: SmartAssistant.sln
+      Configuration: Release
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v1.1
+      
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '6.0.x'
+        
+    - name: Setup VSBuild Tools
+      uses: TheMrMilchmann/setup-msvc-dev@v2
+      with:
+        arch: x64
+        
+    - name: Install Dependencies
+      run: |
+        vcpkg install openssl:x64-windows
+        vcpkg install boost:x64-windows
+        vcpkg install websocketpp:x64-windows
+        vcpkg install sqlite3:x64-windows
+        vcpkg install gtest:x64-windows
+        vcpkg integrate install
+      
+    - name: Build Core Library
+      working-directory: ${{github.workspace}}/SmartAssistant.Core
+      run: |
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake"
+        cmake --build . --config Release
+        
+    - name: Build UI
+      run: |
+        nuget restore ${{env.Solution_Name}}
+        msbuild /m /p:Configuration=${{env.Configuration}} ${{env.Solution_Name}}
+        
+    - name: Run Tests
+      working-directory: ${{github.workspace}}/SmartAssistant.Core/build
+      run: ctest -C Release --output-on-failure
+        
+    - name: Create Installer
+      run: |
+        choco install wixtoolset -y
+        cd installer
+        powershell -File build_installer.ps1
+        
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: SmartAssistant-Windows
+        path: |
+          installer/bin/Release/*.msi
+          SmartAssistant.UI/bin/Release/
