@@ -46,6 +46,13 @@
     }
   ],
   "builtin-baseline": "2960d7d80e8d09c84ae8abf15c12196c2ca7d39a",
+  "vcpkg-configuration": {
+    "default-registry": {
+      "kind": "git",
+      "repository": "https://github.com/Microsoft/vcpkg",
+      "baseline": "2960d7d80e8d09c84ae8abf15c12196c2ca7d39a"
+    }
+  },
   "overrides": [
     {
       "name": "openssl",
