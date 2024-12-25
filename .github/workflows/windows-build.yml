@@ -10,6 +10,9 @@ env:
   VCPKG_ROOT: ${{ github.workspace }}/vcpkg
   VCPKG_DEFAULT_TRIPLET: x64-windows
   BUILD_TYPE: Release
+  SOLUTION_FILE_PATH: SmartAssistant.sln
+  MSBUILD_PATH: "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\MSBuild\\Current\\Bin\\MSBuild.exe"
+  CMAKE_GENERATOR: "Visual Studio 17 2022"
 
 jobs:
   build:
@@ -33,15 +36,9 @@ jobs:
 
     - name: Setup vcpkg
       run: |
-        if (!(Test-Path vcpkg)) {
-          git clone https://github.com/Microsoft/vcpkg.git
-          cd vcpkg
-          git checkout 2023.12.12
-          .\bootstrap-vcpkg.bat -disableMetrics
-        } else {
-          cd vcpkg
-          .\bootstrap-vcpkg.bat -disableMetrics
-        }
+        cd vcpkg
+        git checkout 2023.12.12
+        .\bootstrap-vcpkg.bat -disableMetrics
 
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v1.1
@@ -82,9 +79,13 @@ jobs:
     - name: Build Core Library
       run: |
         cmake -B build -S . `
+          -G "${{ env.CMAKE_GENERATOR }}" `
+          -A x64 `
           -DCMAKE_TOOLCHAIN_FILE="${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake" `
-          -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
-        cmake --build build --config ${{ env.BUILD_TYPE }}
+          -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} `
+          -DVCPKG_TARGET_TRIPLET=x64-windows `
+          -DCMAKE_PREFIX_PATH="${{ env.VCPKG_ROOT }}/installed/x64-windows"
+        cmake --build build --config ${{ env.BUILD_TYPE }} --parallel
 
     - name: Build UI
       run: |
