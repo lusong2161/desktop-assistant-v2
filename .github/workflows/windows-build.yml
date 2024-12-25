@@ -2,13 +2,16 @@ name: Windows Build
 
 on:
   push:
-    branches: [ main, devin/1735116746-setup-github-actions-v2 ]
+    branches: [ main ]
   pull_request:
-    branches: [ main, devin/1735116746-setup-github-actions-v2 ]
+    branches: [ main ]
 
 env:
-  VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+  VCPKG_ROOT: C:\vcpkg
   VCPKG_DEFAULT_TRIPLET: x64-windows
+  VCPKG_INSTALLED_DIR: ${{ github.workspace }}\vcpkg_installed
+  CMAKE_TOOLCHAIN_FILE: C:\vcpkg\scripts\buildsystems\vcpkg.cmake
+  BUILD_TYPE: Release
   BUILD_TYPE: Release
   SOLUTION_FILE_PATH: SmartAssistant.sln
   MSBUILD_PATH: "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\MSBuild\\Current\\Bin\\MSBuild.exe"
@@ -35,11 +38,14 @@ jobs:
           vcpkg-${{ runner.os }}-
 
     - name: Setup vcpkg
+      shell: pwsh
       run: |
-        git clone https://github.com/Microsoft/vcpkg.git ${{ env.VCPKG_ROOT }}
-        cd ${{ env.VCPKG_ROOT }}
+        Write-Host "Cloning vcpkg..."
+        git clone https://github.com/Microsoft/vcpkg.git "${{ env.VCPKG_ROOT }}"
+        Set-Location -Path "${{ env.VCPKG_ROOT }}"
         git checkout 2023.12.12
-        .\bootstrap-vcpkg.bat -disableMetrics
+        Write-Host "Bootstrapping vcpkg..."
+        ./bootstrap-vcpkg.bat -disableMetrics
 
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v1.1
@@ -55,25 +61,26 @@ jobs:
         arch: x64
 
     - name: Install Dependencies
+      shell: pwsh
       run: |
-        cd ${{ env.VCPKG_ROOT }}
-        .\vcpkg integrate install
-        echo "::group::Installing C++ Dependencies"
+        Set-Location -Path "${{ env.VCPKG_ROOT }}"
+        Write-Host "Installing vcpkg dependencies..."
+        ./vcpkg integrate install
         
-        # Install C++ dependencies
-        .\vcpkg install --triplet=x64-windows `
-          openssl `
-          boost[system,filesystem,thread] `
-          sqlite3 `
-          websocketpp `
-          gtest
+        Write-Host "::group::Installing C++ Dependencies"
+        ./vcpkg install --triplet=x64-windows `
+          openssl:x64-windows `
+          boost[system,filesystem,thread]:x64-windows `
+          sqlite3:x64-windows `
+          websocketpp:x64-windows `
+          gtest:x64-windows
         
-        cd ${{ github.workspace }}
-        echo "::endgroup::"
-        echo "::group::Installing NuGet Packages"
+        Set-Location -Path "${{ github.workspace }}"
+        Write-Host "::endgroup::"
+        Write-Host "::group::Installing NuGet Packages"
         dotnet restore SmartAssistant.UI/SmartAssistant.UI.csproj
         dotnet restore SmartAssistant.UI.Tests/SmartAssistant.UI.Tests.csproj
-        echo "::endgroup::"
+        Write-Host "::endgroup::"
 
     - name: Build Core Library
       run: |
