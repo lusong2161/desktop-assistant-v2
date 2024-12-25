@@ -7,7 +7,7 @@
       "inheritEnvironments": [ "msvc_x64_x64" ],
       "buildRoot": "${projectDir}\\out\\build\\${name}",
       "installRoot": "${projectDir}\\out\\install\\${name}",
-      "cmakeCommandArgs": "",
+      "cmakeCommandArgs": "-DCMAKE_TOOLCHAIN_FILE=${env.VCPKG_ROOT}\\scripts\\buildsystems\\vcpkg.cmake",
       "buildCommandArgs": "",
       "ctestCommandArgs": "",
       "variables": [
@@ -15,17 +15,37 @@
           "name": "CMAKE_CXX_STANDARD",
           "value": "17",
           "type": "STRING"
+        },
+        {
+          "name": "WITH_OPENSSL",
+          "value": "ON",
+          "type": "BOOL"
+        },
+        {
+          "name": "WITH_WEBSOCKETPP",
+          "value": "ON",
+          "type": "BOOL"
+        },
+        {
+          "name": "WITH_SQLITE",
+          "value": "ON",
+          "type": "BOOL"
+        },
+        {
+          "name": "WITH_BOOST",
+          "value": "ON",
+          "type": "BOOL"
         }
       ]
     },
     {
-      "name": "x64-Release",
+      "name": "x64-Debug",
       "generator": "Visual Studio 17 2022",
-      "configurationType": "RelWithDebInfo",
+      "configurationType": "Debug",
       "inheritEnvironments": [ "msvc_x64_x64" ],
       "buildRoot": "${projectDir}\\out\\build\\${name}",
       "installRoot": "${projectDir}\\out\\install\\${name}",
-      "cmakeCommandArgs": "",
+      "cmakeCommandArgs": "-DCMAKE_TOOLCHAIN_FILE=${env.VCPKG_ROOT}\\scripts\\buildsystems\\vcpkg.cmake",
       "buildCommandArgs": "",
       "ctestCommandArgs": "",
       "variables": [
@@ -33,6 +53,26 @@
           "name": "CMAKE_CXX_STANDARD",
           "value": "17",
           "type": "STRING"
+        },
+        {
+          "name": "WITH_OPENSSL",
+          "value": "ON",
+          "type": "BOOL"
+        },
+        {
+          "name": "WITH_WEBSOCKETPP",
+          "value": "ON",
+          "type": "BOOL"
+        },
+        {
+          "name": "WITH_SQLITE",
+          "value": "ON",
+          "type": "BOOL"
+        },
+        {
+          "name": "WITH_BOOST",
+          "value": "ON",
+          "type": "BOOL"
         }
       ]
     }

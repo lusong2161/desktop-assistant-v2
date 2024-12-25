@@ -48,6 +48,15 @@ jobs:
         cmake .. -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake"
         cmake --build . --config Release
         
+    - name: Install NuGet Packages
+      run: |
+        nuget install DocumentFormat.OpenXml -Version 2.20.0
+        nuget install Microsoft.AspNetCore.SignalR.Client -Version 6.0.0
+        nuget install MaterialDesignThemes -Version 4.9.0
+        nuget install System.IO.Abstractions -Version 19.2.69
+        nuget install Newtonsoft.Json -Version 13.0.3
+        nuget install Microsoft.Extensions.DependencyInjection -Version 6.0.0
+        
     - name: Build UI
       run: |
         nuget restore ${{env.Solution_Name}}

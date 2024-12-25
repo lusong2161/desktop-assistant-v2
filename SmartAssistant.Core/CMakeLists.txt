@@ -8,6 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(OpenSSL REQUIRED)
 find_package(SQLite3 REQUIRED)
 find_package(websocketpp REQUIRED)
+find_package(Boost REQUIRED COMPONENTS system filesystem thread)
 find_package(GTest REQUIRED)
 
 # Set source files
@@ -22,14 +23,20 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${OPENSSL_INCLUDE_DIR}
     ${SQLite3_INCLUDE_DIRS}
+    ${Boost_INCLUDE_DIRS}
+    ${WEBSOCKETPP_INCLUDE_DIR}
 )
 
 # Link libraries
 target_link_libraries(${PROJECT_NAME}
     ${OPENSSL_LIBRARIES}
     ${SQLite3_LIBRARIES}
+    ${Boost_LIBRARIES}
     ws2_32
     userenv
+    shell32
+    ole32
+    oleaut32
 )
 
 # Set Windows-specific properties
@@ -37,7 +44,22 @@ if(WIN32)
     target_compile_definitions(${PROJECT_NAME} PRIVATE
         WIN32_LEAN_AND_MEAN
         NOMINMAX
-        _WIN32_WINNT=0x0601
+        _WIN32_WINNT=0x0A00  # Target Windows 10
+        UNICODE
+        _UNICODE
+        STRICT
+        SECURITY_WIN32
+    )
+    
+    # Enable security features
+    target_compile_options(${PROJECT_NAME} PRIVATE
+        /guard:cf  # Control Flow Guard
+        /GS        # Buffer Security Check
+        /DYNAMICBASE # ASLR
+        /NXCOMPAT  # DEP
+        /MP        # Multi-processor compilation
+        /W4        # Warning level 4
+        /WX        # Treat warnings as errors
     )
 endif()
 
