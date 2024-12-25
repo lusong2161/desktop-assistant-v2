@@ -11,7 +11,7 @@
       "name": "boost",
       "version>=": "1.82.0",
       "platform": "windows",
-      "features": ["system", "filesystem", "thread", "program_options", "regex"]
+      "features": ["system", "filesystem", "thread", "program-options", "regex"]
     },
     {
       "name": "sqlite3",
