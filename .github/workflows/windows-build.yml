@@ -18,13 +18,20 @@ jobs:
     steps:
     - uses: actions/checkout@v3
       with:
-        submodules: recursive
         fetch-depth: 0
 
-    - name: Add vcpkg as submodule
+    - name: Configure Git
       run: |
-        git submodule add https://github.com/Microsoft/vcpkg.git
-        git submodule update --init --recursive
+        git config --global user.name "GitHub Actions Bot"
+        git config --global user.email "actions@github.com"
+        git config --global --add safe.directory "*"
+
+    - name: Initialize vcpkg
+      run: |
+        git clone https://github.com/Microsoft/vcpkg.git
+        cd vcpkg
+        git checkout 2023.12.12
+        .\bootstrap-vcpkg.bat -disableMetrics
 
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v1.1
