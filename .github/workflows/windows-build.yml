@@ -1,0 +1,91 @@
+name: Windows Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+  VCPKG_DEFAULT_TRIPLET: x64-windows
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: true
+
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v1.1
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '6.0.x'
+
+    - name: Setup VSBuild Tools
+      uses: TheMrMilchmann/setup-msvc-dev@v3
+      with:
+        arch: x64
+
+    - name: Install Dependencies
+      run: |
+        # Install vcpkg
+        git clone https://github.com/Microsoft/vcpkg.git
+        cd vcpkg
+        .\bootstrap-vcpkg.bat
+        .\vcpkg integrate install
+        
+        # Install C++ dependencies
+        .\vcpkg install openssl:x64-windows
+        .\vcpkg install boost:x64-windows
+        .\vcpkg install sqlite3:x64-windows
+        .\vcpkg install websocketpp:x64-windows
+        .\vcpkg install gtest:x64-windows
+        
+        # Install NuGet packages
+        cd ..
+        dotnet restore SmartAssistant.UI/SmartAssistant.UI.csproj
+        
+        # Install additional NuGet packages
+        dotnet add SmartAssistant.UI/SmartAssistant.UI.csproj package MaterialDesignThemes
+        dotnet add SmartAssistant.UI/SmartAssistant.UI.csproj package Microsoft.AspNetCore.SignalR.Client
+        dotnet add SmartAssistant.UI/SmartAssistant.UI.csproj package DocumentFormat.OpenXml
+        dotnet add SmartAssistant.UI/SmartAssistant.UI.csproj package System.IO.Abstractions
+
+    - name: Build Core Library
+      run: |
+        cmake -B build -S SmartAssistant.Core `
+          -DCMAKE_TOOLCHAIN_FILE="${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake" `
+          -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+        cmake --build build --config ${{ env.BUILD_TYPE }}
+
+    - name: Build UI
+      run: |
+        msbuild /p:Configuration=${{ env.BUILD_TYPE }} /p:Platform=x64 SmartAssistant.UI/SmartAssistant.UI.csproj
+
+    - name: Run Tests
+      run: |
+        cd build
+        ctest -C ${{ env.BUILD_TYPE }} --output-on-failure
+        cd ..
+        dotnet test SmartAssistant.UI.Tests/SmartAssistant.UI.Tests.csproj
+
+    - name: Create Installer
+      run: |
+        cd installer
+        .\build_installer.ps1 -Configuration ${{ env.BUILD_TYPE }}
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: SmartAssistant-Windows
+        path: |
+          installer/bin/${{ env.BUILD_TYPE }}/SmartAssistant-Setup.msi
+          build/${{ env.BUILD_TYPE }}/SmartAssistant.Core.dll
+          SmartAssistant.UI/bin/${{ env.BUILD_TYPE }}/net6.0-windows/SmartAssistant.UI.exe
