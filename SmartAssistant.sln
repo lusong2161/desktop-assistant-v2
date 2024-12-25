@@ -9,6 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartAssistant.UI", "SmartA
 		{D8A75682-C3BA-4F45-A4D8-E23F2B6C4F3A} = {D8A75682-C3BA-4F45-A4D8-E23F2B6C4F3A}
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartAssistant.UI.Tests", "SmartAssistant.UI.Tests\SmartAssistant.UI.Tests.csproj", "{8D9B9F53-9E8A-4D3B-9E4D-6F2E15E8C5B3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7C8B9F53-9E8A-4D3B-9E4D-6F2E15E8C5B2} = {7C8B9F53-9E8A-4D3B-9E4D-6F2E15E8C5B2}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -23,6 +28,10 @@ Global
 		{7C8B9F53-9E8A-4D3B-9E4D-6F2E15E8C5B2}.Debug|x64.Build.0 = Debug|x64
 		{7C8B9F53-9E8A-4D3B-9E4D-6F2E15E8C5B2}.Release|x64.ActiveCfg = Release|x64
 		{7C8B9F53-9E8A-4D3B-9E4D-6F2E15E8C5B2}.Release|x64.Build.0 = Release|x64
+		{8D9B9F53-9E8A-4D3B-9E4D-6F2E15E8C5B3}.Debug|x64.ActiveCfg = Debug|x64
+		{8D9B9F53-9E8A-4D3B-9E4D-6F2E15E8C5B3}.Debug|x64.Build.0 = Debug|x64
+		{8D9B9F53-9E8A-4D3B-9E4D-6F2E15E8C5B3}.Release|x64.ActiveCfg = Release|x64
+		{8D9B9F53-9E8A-4D3B-9E4D-6F2E15E8C5B3}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
