@@ -80,14 +80,14 @@ jobs:
 
     - name: Build Core Library
       run: |
-        cmake -B build -S SmartAssistant.Core `
+        cmake -B build -S . `
           -DCMAKE_TOOLCHAIN_FILE="${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake" `
           -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
         cmake --build build --config ${{ env.BUILD_TYPE }}
 
     - name: Build UI
       run: |
-        msbuild /p:Configuration=${{ env.BUILD_TYPE }} /p:Platform=x64 SmartAssistant.UI/SmartAssistant.UI.csproj
+        msbuild SmartAssistant.sln /p:Configuration=${{ env.BUILD_TYPE }} /p:Platform=x64
 
     - name: Run Tests
       run: |
