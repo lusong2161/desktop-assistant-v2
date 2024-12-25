@@ -1,0 +1,5 @@
+/home/ubuntu/desktop_assistant_v2/build/CMakeFiles/SmartAssistant.Core.dir
+/home/ubuntu/desktop_assistant_v2/build/CMakeFiles/SmartAssistant.Core.Tests.dir
+/home/ubuntu/desktop_assistant_v2/build/CMakeFiles/test.dir
+/home/ubuntu/desktop_assistant_v2/build/CMakeFiles/edit_cache.dir
+/home/ubuntu/desktop_assistant_v2/build/CMakeFiles/rebuild_cache.dir

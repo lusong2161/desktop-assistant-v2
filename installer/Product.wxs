@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="*" 
+           Name="Smart Assistant" 
+           Language="1033" 
+           Version="1.0.0.0" 
+           Manufacturer="SmartAssistant" 
+           UpgradeCode="12345678-1234-1234-1234-123456789012">
+    <Package InstallerVersion="200" 
+             Compressed="yes" 
+             InstallScope="perMachine" />
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+
+    <Feature Id="ProductFeature" Title="SmartAssistant" Level="1">
+      <ComponentGroupRef Id="ProductComponents" />
+      <ComponentGroupRef Id="ProductShortcuts" />
+    </Feature>
+
+    <!-- Installation Directory Structure -->
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFiles64Folder">
+        <Directory Id="INSTALLFOLDER" Name="SmartAssistant">
+          <Directory Id="LibFolder" Name="lib" />
+        </Directory>
+      </Directory>
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="ApplicationProgramsFolder" Name="SmartAssistant"/>
+      </Directory>
+    </Directory>
+
+    <!-- Application Files -->
+    <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+      <Component Id="MainExecutable" Guid="*">
+        <File Id="SmartAssistantEXE" 
+              Name="SmartAssistant.exe" 
+              Source="$(var.SmartAssistant.UI.TargetPath)" 
+              KeyPath="yes" />
+      </Component>
+      <Component Id="CoreDLL" Guid="*">
+        <File Id="SmartAssistantCoreDLL" 
+              Name="SmartAssistant.Core.dll" 
+              Source="$(var.SmartAssistant.Core.TargetPath)" 
+              KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+
+    <!-- Shortcuts -->
+    <ComponentGroup Id="ProductShortcuts" Directory="ApplicationProgramsFolder">
+      <Component Id="ApplicationShortcut" Guid="*">
+        <Shortcut Id="ApplicationStartMenuShortcut" 
+                  Name="Smart Assistant" 
+                  Description="Smart Desktop Assistant"
+                  Target="[#SmartAssistantEXE]"
+                  WorkingDirectory="INSTALLFOLDER"/>
+        <RemoveFolder Id="CleanUpShortCut" On="uninstall"/>
+        <RegistryValue Root="HKCU" 
+                       Key="Software\SmartAssistant" 
+                       Name="installed" 
+                       Type="integer" 
+                       Value="1" 
+                       KeyPath="yes"/>
+      </Component>
+    </ComponentGroup>
+
+    <!-- UI -->
+    <UIRef Id="WixUI_InstallDir" />
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+    <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
+  </Product>
+</Wix>

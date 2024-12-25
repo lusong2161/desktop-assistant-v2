@@ -1,0 +1,187 @@
+<Window x:Class="SmartAssistant.UI.Views.ChatWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SmartAssistant.UI.Views"
+        mc:Ignorable="d"
+        Title="Chat" Height="600" Width="800"
+        WindowStyle="None" 
+        AllowsTransparency="True"
+        Background="Transparent">
+    
+    <Border CornerRadius="10" Background="#F5F5F5" BorderBrush="#E0E0E0" BorderThickness="1">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="250"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Left Panel - Friend List -->
+            <Border Background="#FFFFFF" CornerRadius="10,0,0,10">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="60"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="50"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Search Box -->
+                    <Border Background="#F8F8F8" CornerRadius="10" Margin="10">
+                        <Grid>
+                            <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                                     BorderThickness="0"
+                                     Background="Transparent"
+                                     VerticalAlignment="Center"
+                                     Margin="30,0,10,0"
+                                     FontSize="14"/>
+                            <Image Source="/Resources/search.png" Width="16" Height="16" 
+                                   HorizontalAlignment="Left" Margin="10,0,0,0"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- Friend List -->
+                    <ListView Grid.Row="1" 
+                              ItemsSource="{Binding Friends}"
+                              SelectedItem="{Binding SelectedFriend}"
+                              BorderThickness="0"
+                              Background="Transparent">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Height="60">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="50"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="20"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- Avatar -->
+                                    <Border Width="40" Height="40" CornerRadius="20"
+                                            Background="{Binding AvatarBackground}">
+                                        <TextBlock Text="{Binding InitialLetter}"
+                                                   Foreground="White"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"/>
+                                    </Border>
+
+                                    <!-- Name and Status -->
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Name}" FontWeight="SemiBold"/>
+                                        <TextBlock Text="{Binding Status}" Opacity="0.6" 
+                                                   FontSize="12" Margin="0,2,0,0"/>
+                                    </StackPanel>
+
+                                    <!-- Online Status Indicator -->
+                                    <Ellipse Grid.Column="2" Width="10" Height="10" 
+                                             Fill="{Binding OnlineStatusColor}"
+                                             VerticalAlignment="Center"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+
+                    <!-- Add Friend Button -->
+                    <Button Grid.Row="2" Content="Add Friend"
+                            Command="{Binding AddFriendCommand}"
+                            Margin="10"
+                            Background="#2196F3"
+                            Foreground="White"
+                            BorderThickness="0"
+                            Height="35"/>
+                </Grid>
+            </Border>
+
+            <!-- Right Panel - Chat Area -->
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="60"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="120"/>
+                </Grid.RowDefinitions>
+
+                <!-- Chat Header -->
+                <Border Background="#FFFFFF" BorderThickness="0,0,0,1" 
+                        BorderBrush="#E0E0E0">
+                    <Grid>
+                        <TextBlock Text="{Binding SelectedFriend.Name}"
+                                   FontSize="16"
+                                   FontWeight="SemiBold"
+                                   VerticalAlignment="Center"
+                                   Margin="20,0"/>
+                        
+                        <!-- File Transfer Button -->
+                        <Button Command="{Binding SendFileCommand}"
+                                HorizontalAlignment="Right"
+                                Width="40" Height="40"
+                                Margin="0,0,60,0"
+                                Background="Transparent"
+                                BorderThickness="0">
+                            <Image Source="/Resources/attachment.png" Width="20" Height="20"/>
+                        </Button>
+                        
+                        <!-- Video Call Button -->
+                        <Button Command="{Binding VideoCallCommand}"
+                                HorizontalAlignment="Right"
+                                Width="40" Height="40"
+                                Margin="0,0,10,0"
+                                Background="Transparent"
+                                BorderThickness="0">
+                            <Image Source="/Resources/video-call.png" Width="20" Height="20"/>
+                        </Button>
+                    </Grid>
+                </Border>
+
+                <!-- Chat Messages -->
+                <ScrollViewer Grid.Row="1" x:Name="MessageScroller"
+                             VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding Messages}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Margin="10,5"
+                                        HorizontalAlignment="{Binding MessageAlignment}"
+                                        Background="{Binding MessageBackground}"
+                                        CornerRadius="10"
+                                        Padding="10">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Content}"
+                                                   TextWrapping="Wrap"
+                                                   Foreground="{Binding TextColor}"/>
+                                        <TextBlock Text="{Binding Time}"
+                                                   FontSize="10"
+                                                   Opacity="0.6"
+                                                   Margin="0,5,0,0"/>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+
+                <!-- Message Input -->
+                <Grid Grid.Row="2" Background="#FFFFFF">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="50"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBox Text="{Binding MessageText, UpdateSourceTrigger=PropertyChanged}"
+                             AcceptsReturn="True"
+                             TextWrapping="Wrap"
+                             BorderThickness="0"
+                             Margin="20,10"/>
+
+                    <Button Grid.Row="1"
+                            Command="{Binding SendMessageCommand}"
+                            Content="Send"
+                            Width="100"
+                            Height="35"
+                            Background="#2196F3"
+                            Foreground="White"
+                            BorderThickness="0"
+                            HorizontalAlignment="Right"
+                            Margin="0,0,20,0"/>
+                </Grid>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>
