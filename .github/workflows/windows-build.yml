@@ -35,18 +35,23 @@ jobs:
         channel: 'stable'
         
     - name: Install Dependencies
+      shell: pwsh
       run: |
-        cd smart-assistant
+        Set-Location -Path "smart-assistant"
+        flutter config --enable-windows-desktop
         flutter pub get
         
     - name: Build Flutter App
+      shell: pwsh
       run: |
-        cd smart-assistant
-        flutter build windows
+        Set-Location -Path "smart-assistant"
+        flutter config --enable-windows-desktop
+        flutter build windows --release
         
     - name: Run Tests
+      shell: pwsh
       run: |
-        cd smart-assistant
+        Set-Location -Path "smart-assistant"
         flutter test
         
     - name: Upload Build Artifacts
