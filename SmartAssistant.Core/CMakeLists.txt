@@ -4,6 +4,22 @@ project(SmartAssistant.Core)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
+    set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+        CACHE STRING "Vcpkg toolchain file")
+endif()
+
+# Windows-specific settings
+if(WIN32)
+    add_definitions(
+        -DWIN32_LEAN_AND_MEAN
+        -DNOMINMAX
+        -D_WIN32_WINNT=0x0A00
+        -DUNICODE
+        -D_UNICODE
+    )
+endif()
+
 # Find required packages
 find_package(OpenSSL REQUIRED)
 find_package(SQLite3 REQUIRED)
@@ -12,8 +28,34 @@ find_package(Boost REQUIRED COMPONENTS system filesystem thread)
 find_package(GTest REQUIRED)
 
 # Set source files
-file(GLOB_RECURSE SOURCES "src/*.cpp")
-file(GLOB_RECURSE HEADERS "include/*.h")
+file(GLOB_RECURSE SOURCES 
+    "src/*.cpp"
+    "src/AIService.cpp"
+    "src/FileTransferManager.cpp"
+    "src/DocumentService.cpp"
+    "src/NetworkService.cpp"
+    "src/NotificationService.cpp"
+    "src/SystemControl.cpp"
+    "src/Configuration.cpp"
+    "src/AuthenticationManager.cpp"
+    "src/ApiClient.cpp"
+    "src/CryptoService.cpp"
+)
+
+file(GLOB_RECURSE HEADERS 
+    "include/*.h"
+    "include/AIService.h"
+    "include/FileTransferManager.h"
+    "include/DocumentService.h"
+    "include/NetworkService.h"
+    "include/NotificationService.h"
+    "include/SystemControl.h"
+    "include/Configuration.h"
+    "include/AuthenticationManager.h"
+    "include/ApiClient.h"
+    "include/CryptoService.h"
+    "include/Common.h"
+)
 
 # Create shared library
 add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})
