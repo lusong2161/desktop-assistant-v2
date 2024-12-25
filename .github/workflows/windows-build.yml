@@ -36,7 +36,8 @@ jobs:
 
     - name: Setup vcpkg
       run: |
-        cd vcpkg
+        git clone https://github.com/Microsoft/vcpkg.git ${{ env.VCPKG_ROOT }}
+        cd ${{ env.VCPKG_ROOT }}
         git checkout 2023.12.12
         .\bootstrap-vcpkg.bat -disableMetrics
 
@@ -55,21 +56,19 @@ jobs:
 
     - name: Install Dependencies
       run: |
-        cd vcpkg
+        cd ${{ env.VCPKG_ROOT }}
         .\vcpkg integrate install
         echo "::group::Installing C++ Dependencies"
         
         # Install C++ dependencies
-        .\vcpkg install openssl:x64-windows
-        .\vcpkg install boost:x64-windows
-        .\vcpkg install sqlite3:x64-windows
-        .\vcpkg install websocketpp:x64-windows
-        .\vcpkg install gtest:x64-windows
+        .\vcpkg install --triplet=x64-windows `
+          openssl `
+          boost[system,filesystem,thread] `
+          sqlite3 `
+          websocketpp `
+          gtest
         
-        # Install NuGet packages
-        cd ..
-        dotnet restore SmartAssistant.UI/SmartAssistant.UI.csproj
-        
+        cd ${{ github.workspace }}
         echo "::endgroup::"
         echo "::group::Installing NuGet Packages"
         dotnet restore SmartAssistant.UI/SmartAssistant.UI.csproj
@@ -84,8 +83,9 @@ jobs:
           -DCMAKE_TOOLCHAIN_FILE="${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake" `
           -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} `
           -DVCPKG_TARGET_TRIPLET=x64-windows `
-          -DCMAKE_PREFIX_PATH="${{ env.VCPKG_ROOT }}/installed/x64-windows"
-        cmake --build build --config ${{ env.BUILD_TYPE }} --parallel
+          -DCMAKE_PREFIX_PATH="${{ env.VCPKG_ROOT }}/installed/x64-windows" `
+          -DBUILD_TESTING=OFF
+        cmake --build build --config ${{ env.BUILD_TYPE }} --parallel --verbose
 
     - name: Build UI
       run: |

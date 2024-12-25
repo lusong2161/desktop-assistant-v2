@@ -35,6 +35,12 @@ find_package(GTest REQUIRED)
 # Add core library subdirectory
 add_subdirectory(SmartAssistant.Core)
 
-# Enable testing
-enable_testing()
-add_subdirectory(SmartAssistant.Core/tests)
+# Add core library subdirectory
+add_subdirectory(SmartAssistant.Core)
+
+# Enable testing if requested
+option(BUILD_TESTING "Build tests" OFF)
+if(BUILD_TESTING)
+    enable_testing()
+    add_subdirectory(SmartAssistant.Core/tests)
+endif()
