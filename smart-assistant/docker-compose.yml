@@ -1,0 +1,18 @@
+version: '3'
+services:
+  flutter_dev:
+    build: .
+    volumes:
+      - .:/app
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - ${HOME}/.Xauthority:/home/flutter/.Xauthority
+    environment:
+      - DISPLAY=${DISPLAY}
+      - XAUTHORITY=/home/flutter/.Xauthority
+    network_mode: "host"
+    privileged: true
+    command: >
+      bash -c "
+        flutter config --enable-linux-desktop &&
+        flutter doctor -v &&
+        tail -f /dev/null"  # Keep container running
