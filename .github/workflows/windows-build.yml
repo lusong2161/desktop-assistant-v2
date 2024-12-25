@@ -2,9 +2,9 @@ name: Windows Build
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, devin/1735116746-setup-github-actions-v2 ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, devin/1735116746-setup-github-actions-v2 ]
 
 env:
   VCPKG_ROOT: ${{ github.workspace }}/vcpkg
