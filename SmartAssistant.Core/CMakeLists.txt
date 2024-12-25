@@ -32,12 +32,17 @@ target_link_libraries(${PROJECT_NAME}
     ${OPENSSL_LIBRARIES}
     ${SQLite3_LIBRARIES}
     ${Boost_LIBRARIES}
-    ws2_32
-    userenv
-    shell32
-    ole32
-    oleaut32
 )
+
+if(WIN32)
+    target_link_libraries(${PROJECT_NAME}
+        ws2_32
+        userenv
+        shell32
+        ole32
+        oleaut32
+    )
+endif()
 
 # Set Windows-specific properties
 if(WIN32)
