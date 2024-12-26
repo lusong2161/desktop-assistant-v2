@@ -17,16 +17,27 @@ find_package(cpprestsdk CONFIG REQUIRED)
 
 # 设置源文件
 file(GLOB_RECURSE SOURCES 
-    "src/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
 )
 
 # 设置头文件
 file(GLOB_RECURSE HEADERS
-    "include/*.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h"
 )
+
+# 确保有源文件
+if(NOT SOURCES)
+    message(FATAL_ERROR "No source files found!")
+endif()
 
 # 创建库
 add_library(${PROJECT_NAME} STATIC ${SOURCES} ${HEADERS})
+
+# 设置C++标准属性
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED ON
+)
 
 # 设置包含目录
 target_include_directories(${PROJECT_NAME} 
