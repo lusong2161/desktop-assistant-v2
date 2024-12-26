@@ -53,7 +53,7 @@ jobs:
         
     - name: Build Core Library
       shell: pwsh
-      timeout-minutes: 20
+      timeout-minutes: 40
       run: |
         $ErrorActionPreference = "Continue"
         $CorePath = Join-Path $env:GITHUB_WORKSPACE "SmartAssistant.Core"
