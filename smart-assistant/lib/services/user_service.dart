@@ -23,4 +23,17 @@ class UserService {
       throw Exception('发送消息失败: $e');
     }
   }
+
+  // 创建测试用户
+  Future<User> createTestUser() async {
+    try {
+      return User(
+        id: 'test-user-${DateTime.now().millisecondsSinceEpoch}',
+        name: '测试用户',
+        isOnline: true,
+      );
+    } catch (e) {
+      throw Exception('创建测试用户失败: $e');
+    }
+  }
 }
