@@ -53,35 +53,69 @@ jobs:
     - name: Build Core Library
       shell: pwsh
       run: |
+        $ErrorActionPreference = "Continue"
         $CorePath = Join-Path $env:GITHUB_WORKSPACE "SmartAssistant.Core"
         $BuildPath = Join-Path $CorePath "build"
         $VcpkgPath = Join-Path $env:GITHUB_WORKSPACE "vcpkg"
         $ToolchainPath = Join-Path $VcpkgPath "scripts\buildsystems\vcpkg.cmake"
         
+        Write-Host "=== 环境变量和路径信息 ==="
+        Write-Host "GITHUB_WORKSPACE: $env:GITHUB_WORKSPACE"
+        Write-Host "VCPKG_ROOT: $env:VCPKG_ROOT"
         Write-Host "Core Path: $CorePath"
         Write-Host "Build Path: $BuildPath"
         Write-Host "Toolchain Path: $ToolchainPath"
         
+        Write-Host "`n=== 检查目录结构 ==="
+        Get-ChildItem -Path $env:GITHUB_WORKSPACE -Depth 2
+        
         if (-not (Test-Path $CorePath)) {
-            Write-Error "Core directory not found at: $CorePath"
+            Write-Error "Core目录未找到: $CorePath"
             exit 1
         }
         
+        Write-Host "`n=== 准备构建目录 ==="
         Set-Location -Path $CorePath
+        if (Test-Path $BuildPath) {
+            Remove-Item -Path $BuildPath -Recurse -Force
+            Write-Host "已清理旧的构建目录"
+        }
         New-Item -ItemType Directory -Force -Path $BuildPath
         Set-Location -Path $BuildPath
         
-        cmake -A x64 -DCMAKE_TOOLCHAIN_FILE="$ToolchainPath" ..
+        Write-Host "`n=== 运行CMake配置 ==="
+        Write-Host "CMake版本信息:"
+        cmake --version
+        
+        Write-Host "`n正在配置CMake..."
+        cmake -A x64 -DCMAKE_TOOLCHAIN_FILE="$ToolchainPath" -DCMAKE_BUILD_TYPE=Release ..
         if ($LASTEXITCODE -ne 0) {
-            Write-Error "CMake configuration failed"
+            Write-Host "CMake输出目录内容:"
+            Get-ChildItem -Path . -Recurse
+            Write-Host "CMake错误日志:"
+            if (Test-Path "CMakeFiles/CMakeError.log") {
+                Get-Content "CMakeFiles/CMakeError.log"
+            }
+            Write-Error "CMake配置失败"
             exit 1
         }
         
-        cmake --build . --config Release
+        Write-Host "`n=== 开始构建项目 ==="
+        cmake --build . --config Release --verbose
         if ($LASTEXITCODE -ne 0) {
-            Write-Error "CMake build failed"
+            Write-Host "构建错误日志:"
+            Get-ChildItem -Path . -Filter *.log -Recurse | ForEach-Object {
+                Write-Host "`n=== $($_.FullName) ===="
+                Get-Content $_.FullName
+            }
+            Write-Error "CMake构建失败"
             exit 1
         }
+        
+        Write-Host "`n=== 构建完成 ==="
+        Write-Host "输出文件列表:"
+        Get-ChildItem -Path . -Recurse -Filter *.exe
+        Get-ChildItem -Path . -Recurse -Filter *.dll
         
     - name: Build Flutter App
       shell: pwsh
