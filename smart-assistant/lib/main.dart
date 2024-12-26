@@ -144,7 +144,7 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: Row(
-        children: [
+        children: <Widget>[
           // 左侧用户列表
           SizedBox(
             width: 200,
@@ -164,7 +164,8 @@ class _MyHomePageState extends State<MyHomePage> {
           // 主要内容区域
           Expanded(
             child: Column(
-              children: [
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
                 Expanded(
                   child: ListView.builder(
                     itemCount: _messages.length,
@@ -182,7 +183,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Row(
-                    children: [
+                    children: <Widget>[
                       Expanded(
                         child: TextField(
                           controller: _messageController,
@@ -203,7 +204,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   padding: const EdgeInsets.all(8.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
+                    children: <Widget>[
                       ElevatedButton(
                         onPressed: _testFileTransfer,
                         child: const Text('选择文件'),
@@ -235,6 +236,11 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                     ),
                   ),
+              ],
+            ),
+          ),
+        ],
+      ),
         ],
       ),
     );
