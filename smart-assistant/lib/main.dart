@@ -175,66 +175,66 @@ class _MyHomePageState extends State<MyHomePage> {
                     },
                   ),
                 ),
-          if (_markdownContent.isNotEmpty)
-            Expanded(
-              child: Markdown(data: _markdownContent),
-            ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _messageController,
-                    decoration: const InputDecoration(
-                      hintText: '输入测试消息...',
-                      border: OutlineInputBorder(),
-                    ),
+                if (_markdownContent.isNotEmpty)
+                  Expanded(
+                    child: Markdown(data: _markdownContent),
+                  ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _messageController,
+                          decoration: const InputDecoration(
+                            hintText: '输入测试消息...',
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.send),
+                        onPressed: _testAIDialog,
+                      ),
+                    ],
                   ),
                 ),
-                IconButton(
-                  icon: const Icon(Icons.send),
-                  onPressed: _testAIDialog,
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton(
+                        onPressed: _testFileTransfer,
+                        child: const Text('选择文件'),
+                      ),
+                      ElevatedButton(
+                        onPressed: _shareFile,
+                        child: const Text('共享文件'),
+                      ),
+                      ElevatedButton(
+                        onPressed: _testDocumentPreview,
+                        child: const Text('协同文档'),
+                      ),
+                    ],
+                  ),
                 ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                  onPressed: _testFileTransfer,
-                  child: const Text('选择文件'),
-                ),
-                ElevatedButton(
-                  onPressed: _shareFile,
-                  child: const Text('共享文件'),
-                ),
-                ElevatedButton(
-                  onPressed: _testDocumentPreview,
-                  child: const Text('协同文档'),
-                ),
-              ],
-            ),
-          ),
-          if (_sharedFiles.isNotEmpty)
-            Container(
-              height: 100,
-              padding: const EdgeInsets.all(8.0),
-              child: Card(
-                child: ListView.builder(
-                  itemCount: _sharedFiles.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      leading: const Icon(Icons.file_present),
-                      title: Text(_sharedFiles[index]),
-                    );
-                  },
-                ),
-              ),
-            ),
+                if (_sharedFiles.isNotEmpty)
+                  Container(
+                    height: 100,
+                    padding: const EdgeInsets.all(8.0),
+                    child: Card(
+                      child: ListView.builder(
+                        itemCount: _sharedFiles.length,
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                            leading: const Icon(Icons.file_present),
+                            title: Text(_sharedFiles[index]),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
         ],
       ),
     );
