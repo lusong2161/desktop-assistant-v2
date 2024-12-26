@@ -41,6 +41,46 @@ jobs:
         flutter config --enable-windows-desktop
         flutter pub get
         
+    - name: Setup vcpkg
+      shell: pwsh
+      run: |
+        git clone https://github.com/Microsoft/vcpkg.git
+        .\vcpkg\bootstrap-vcpkg.bat
+        .\vcpkg\vcpkg integrate install
+        
+    - name: Build Core Library
+      shell: pwsh
+      run: |
+        $CorePath = Join-Path $env:GITHUB_WORKSPACE "SmartAssistant.Core"
+        $BuildPath = Join-Path $CorePath "build"
+        $VcpkgPath = Join-Path $env:GITHUB_WORKSPACE "vcpkg"
+        $ToolchainPath = Join-Path $VcpkgPath "scripts\buildsystems\vcpkg.cmake"
+        
+        Write-Host "Core Path: $CorePath"
+        Write-Host "Build Path: $BuildPath"
+        Write-Host "Toolchain Path: $ToolchainPath"
+        
+        if (-not (Test-Path $CorePath)) {
+            Write-Error "Core directory not found at: $CorePath"
+            exit 1
+        }
+        
+        Set-Location -Path $CorePath
+        New-Item -ItemType Directory -Force -Path $BuildPath
+        Set-Location -Path $BuildPath
+        
+        cmake -A x64 -DCMAKE_TOOLCHAIN_FILE="$ToolchainPath" ..
+        if ($LASTEXITCODE -ne 0) {
+            Write-Error "CMake configuration failed"
+            exit 1
+        }
+        
+        cmake --build . --config Release
+        if ($LASTEXITCODE -ne 0) {
+            Write-Error "CMake build failed"
+            exit 1
+        }
+        
     - name: Build Flutter App
       shell: pwsh
       run: |

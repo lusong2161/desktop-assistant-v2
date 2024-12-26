@@ -1,0 +1,15 @@
+{
+  "name": "smart-assistant-core",
+  "version-string": "0.1.0",
+  "dependencies": [
+    "boost",
+    "openssl",
+    "sqlite3",
+    "nlohmann-json",
+    "curl",
+    "fmt",
+    "spdlog",
+    "gtest",
+    "cpprestsdk"
+  ]
+}
