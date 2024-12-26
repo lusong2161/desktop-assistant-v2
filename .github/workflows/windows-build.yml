@@ -43,6 +43,7 @@ jobs:
         
     - name: Setup vcpkg
       shell: pwsh
+      timeout-minutes: 15
       run: |
         git clone https://github.com/Microsoft/vcpkg.git
         .\vcpkg\bootstrap-vcpkg.bat
@@ -52,6 +53,7 @@ jobs:
         
     - name: Build Core Library
       shell: pwsh
+      timeout-minutes: 20
       run: |
         $ErrorActionPreference = "Continue"
         $CorePath = Join-Path $env:GITHUB_WORKSPACE "SmartAssistant.Core"
@@ -119,6 +121,7 @@ jobs:
         
     - name: Build Flutter App
       shell: pwsh
+      timeout-minutes: 15
       run: |
         Set-Location -Path "smart-assistant"
         flutter config --enable-windows-desktop
