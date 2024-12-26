@@ -2,7 +2,10 @@
   "name": "smart-assistant-core",
   "version-string": "0.1.0",
   "dependencies": [
-    "boost",
+    {
+      "name": "boost",
+      "features": ["date-time"]
+    },
     "openssl",
     "sqlite3",
     "nlohmann-json",
