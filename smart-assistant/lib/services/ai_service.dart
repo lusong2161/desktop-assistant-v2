@@ -18,10 +18,10 @@ class AIService {
       // 首先通过命令处理器处理输入
       final command = await _commandProcessor.processInput(message);
       
-      if (command == null) {
+      if (command == null || command.type != CommandType.chat) {
         return {
           'type': 'error',
-          'content': '命令格式错误',
+          'content': '无效的聊天命令',
         };
       }
 

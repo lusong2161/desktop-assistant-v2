@@ -4,15 +4,17 @@ import 'package:smart_assistant/services/command_processor.dart';
 import 'package:http/http.dart' as http;
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
+import 'dart:convert';
 
-class MockHttpClient extends Mock implements http.Client {}
+@GenerateMocks([http.Client])
+part 'ai_service_test.mocks.dart';
 
 void main() {
   late AIService aiService;
-  late MockHttpClient mockClient;
+  late MockClient mockClient;
 
   setUp(() {
-    mockClient = MockHttpClient();
+    mockClient = MockClient();
     aiService = AIService(
       baseUrl: 'http://test.api',
       client: mockClient,
@@ -23,11 +25,14 @@ void main() {
     test('处理聊天消息', () async {
       when(mockClient.post(
         Uri.parse('http://test.api/api/chat'),
-        headers: anyNamed('headers'),
-        body: anyNamed('body'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'message': '你好',
+          'type': 'chat',
+        }),
       )).thenAnswer((_) async => http.Response('{"response": "你好！"}', 200));
 
-      final response = await aiService.processMessage('你好');
+      final response = await aiService.processMessage('/chat 你好');
       expect(response['type'], equals('chat'));
       expect(response['content'], equals('你好！'));
     });
@@ -35,11 +40,14 @@ void main() {
     test('处理错误响应', () async {
       when(mockClient.post(
         Uri.parse('http://test.api/api/chat'),
-        headers: anyNamed('headers'),
-        body: anyNamed('body'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'message': '你好',
+          'type': 'chat',
+        }),
       )).thenAnswer((_) async => http.Response('服务器错误', 500));
 
-      final response = await aiService.processMessage('你好');
+      final response = await aiService.processMessage('/chat 你好');
       expect(response['type'], equals('error'));
       expect(response['content'], contains('错误'));
     });
