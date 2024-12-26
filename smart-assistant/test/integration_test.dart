@@ -10,7 +10,7 @@ void main() {
     late UserService userService;
 
     setUp(() {
-      aiService = AIService();
+      aiService = AIService(baseUrl: 'http://test.api');
       fileService = FileService();
       userService = UserService();
     });
@@ -25,8 +25,9 @@ void main() {
       expect(user, isNotNull);
 
       // 测试文件共享权限
-      final shareResult = await fileService.shareFile(testFile, user);
-      expect(shareResult, isTrue);
+      final recipients = ['user1@example.com'];
+      await fileService.shareFile(testFile, recipients);
+      // 文件共享成功不会抛出异常
     });
 
     test('AI服务和用户服务集成测试', () async {

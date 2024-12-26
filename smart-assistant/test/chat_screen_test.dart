@@ -17,7 +17,7 @@ void main() {
   testWidgets('聊天界面测试', (WidgetTester tester) async {
     await tester.pumpWidget(
       MaterialApp(
-        home: ChatScreen(),
+        home: ChatScreen(aiService: mockAIService),
       ),
     );
 
@@ -40,7 +40,7 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
-        home: ChatScreen(),
+        home: ChatScreen(aiService: mockAIService),
       ),
     );
 

@@ -6,6 +6,24 @@ class AIService {
   final String baseUrl;
   final CommandProcessor _commandProcessor;
   final http.Client _client;
+  
+  Future<List<Map<String, dynamic>>> getUserMessageHistory(dynamic user) async {
+    try {
+      final response = await _client.get(
+        Uri.parse('$baseUrl/api/messages/history'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        return data.cast<Map<String, dynamic>>();
+      } else {
+        throw Exception('获取消息历史失败: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('获取消息历史失败: $e');
+    }
+  }
 
   AIService({
     required this.baseUrl,
